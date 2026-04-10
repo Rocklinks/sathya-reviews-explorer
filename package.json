@@ -1,0 +1,12 @@
+{
+  "name": "sathya-mob-scraper",
+  "version": "1.0.0",
+  "description": "Nightly Google Review scraper for Sathya Mobiles",
+  "main": "scripts/scraper.js",
+  "scripts": {
+    "scrape": "node scripts/scraper.js"
+  },
+  "dependencies": {
+    "playwright": "^1.44.0"
+  }
+}
