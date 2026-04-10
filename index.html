@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sathya Reviews Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text2: #475569;
+            --muted: #64748b;
+            --green: #059669;
+            --rose: #e11d48;
+            --indigo: #4f46e5;
+            --amber: #d97706;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .header p {
+            color: var(--muted);
+            font-size: 15px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .toolbar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        select, input {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 15px;
+        }
+        .review-meta {
+            flex: 1;
+            margin-left: 14px;
+        }
+        .author {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .branch {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .stars {
+            color: #f59e0b;
+            font-size: 18px;
+        }
+        .review-text {
+            margin: 12px 0;
+            color: var(--text2);
+            line-height: 1.7;
+        }
+        .time {
+            font-size: 12px;
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+        }
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .tag-hf { background: rgba(79,70,229,0.1); color: var(--indigo); }
+        .empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted);
+        }
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⭐ Sathya Reviews Explorer</h1>
+            <p>All individual Google reviews from all 36 branches • Updated daily</p>
+        </div>
+
+        <div class="toolbar">
+            <select id="branch-select" onchange="filterReviews()">
+                <option value="">All Branches</option>
+            </select>
+            <select id="date-select" onchange="filterReviews()">
+                <option value="">All Dates</option>
+            </select>
+            <select id="rating-select" onchange="filterReviews()">
+                <option value="">All Ratings</option>
+                <option value="5">5 ★</option>
+                <option value="4">4 ★</option>
+                <option value="3">3 ★</option>
+                <option value="2">2 ★</option>
+                <option value="1">1 ★</option>
+            </select>
+            <input type="text" id="search-input" placeholder="Search author or review text..." 
+                   onkeyup="filterReviews()" style="flex:1; min-width:200px;">
+        </div>
+
+        <div id="reviews-container">
+            <div class="loading">Loading reviews from Hugging Face...</div>
+        </div>
+    </div>
+
+    <script>
+        const HF_REPO = "RocklinKS/sathya-reviews";
+        let allReviews = [];
+
+        async function loadReviews() {
+            const container = document.getElementById('reviews-container');
+            try {
+                // Load latest available date
+                const datesRes = await fetch(`https://huggingface.co/api/datasets/${HF_REPO}/tree/main/data`);
+                const datesData = await datesRes.json();
+                const dates = datesData.filter(f => f.type === 'file' && f.path.endsWith('.json'))
+                                      .map(f => f.path.replace('data/', '').replace('.json', ''))
+                                      .sort().reverse();
+
+                if (dates.length === 0) {
+                    container.innerHTML = `<div class="empty">No review data yet.<br>Run the scraper first.</div>`;
+                    return;
+                }
+
+                const latestDate = dates[0];
+                const url = `https://huggingface.co/datasets/${HF_REPO}/resolve/main/data/${latestDate}.json`;
+                
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Failed to load");
+                
+                allReviews = await res.json();
+
+                // Populate filters
+                populateFilters();
+                renderReviews(allReviews);
+
+            } catch (e) {
+                container.innerHTML = `<div class="empty">Could not load reviews.<br>Please check if scraper has run successfully.</div>`;
+                console.error(e);
+            }
+        }
+
+        function populateFilters() {
+            const branches = [...new Set(allReviews.map(r => r.branch_name))].sort();
+            const branchSelect = document.getElementById('branch-select');
+            branches.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b;
+                opt.textContent = b;
+                branchSelect.appendChild(opt);
+            });
+
+            const dates = [...new Set(allReviews.map(r => r.snap_date))].sort().reverse();
+            const dateSelect = document.getElementById('date-select');
+            dates.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                dateSelect.appendChild(opt);
+            });
+        }
+
+        function renderReviews(reviews) {
+            const container = document.getElementById('reviews-container');
+            if (reviews.length === 0) {
+                container.innerHTML = `<div class="empty">No reviews match your filters.</div>`;
+                return;
+            }
+
+            let html = '';
+            reviews.forEach(r => {
+                const initials = r.author ? r.author.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2) : '?';
+                const branchColor = r.branch_id % 6 === 0 ? '#4f46e5' : 
+                                  r.branch_id % 5 === 0 ? '#059669' : '#d97706';
+
+                html += `
+                <div class="card">
+                    <div class="card-header">
+                        <div style="display:flex;align-items:center;">
+                            <div class="avatar" style="background:${branchColor}">${initials}</div>
+                            <div class="review-meta">
+                                <div class="author">${r.author || 'Anonymous'}</div>
+                                <div class="branch">${r.branch_name}</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="stars">${'★'.repeat(Math.floor(r.rating))}</div>
+                            <div class="time">${r.time || r.snap_date}</div>
+                        </div>
+                    </div>
+                    ${r.text ? `<div class="review-text">${r.text}</div>` : ''}
+                    <div class="tag tag-hf">HF • ${r.snap_date}</div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function filterReviews() {
+            const branch = document.getElementById('branch-select').value;
+            const date = document.getElementById('date-select').value;
+            const rating = document.getElementById('rating-select').value;
+            const search = document.getElementById('search-input').value.toLowerCase();
+
+            let filtered = allReviews;
+
+            if (branch) filtered = filtered.filter(r => r.branch_name === branch);
+            if (date) filtered = filtered.filter(r => r.snap_date === date);
+            if (rating) filtered = filtered.filter(r => Math.floor(r.rating) === parseInt(rating));
+            if (search) {
+                filtered = filtered.filter(r => 
+                    (r.author && r.author.toLowerCase().includes(search)) ||
+                    (r.text && r.text.toLowerCase().includes(search))
+                );
+            }
+
+            renderReviews(filtered);
+        }
+
+        // Load reviews when page opens
+        window.onload = loadReviews;
+    </script>
+</body>
+</html>
