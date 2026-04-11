@@ -1,4 +1,4 @@
-name: Nightly Review Scraper — Sathya Mobiles
+name: Run Sathya Review — Sathya Mobiles
 
 on:
   schedule:
@@ -47,7 +47,9 @@ jobs:
         id: attempt1
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_REPO:  ${{ vars.HF_REPO || 'RocklinKS/sathya-reviews' }}
+          HF_REPO: ${{ vars.HF_REPO || 'RocklinKS/sathya-reviews' }}
+          # Optional: Use the official variable name that huggingface_hub prefers
+          HUGGINGFACE_HUB_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python scripts/scraper.py
         continue-on-error: true
 
@@ -57,7 +59,9 @@ jobs:
         if: steps.attempt1.outcome == 'failure'
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_REPO:  ${{ vars.HF_REPO || 'RocklinKS/sathya-reviews' }}
+          HF_REPO: ${{ vars.HF_REPO || 'RocklinKS/sathya-reviews' }}
+          # Optional: Use the official variable name that huggingface_hub prefers
+          HUGGINGFACE_HUB_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python scripts/scraper.py
         continue-on-error: true
 
@@ -67,7 +71,9 @@ jobs:
         if: steps.attempt1.outcome == 'failure' && steps.attempt2.outcome == 'failure'
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_REPO:  ${{ vars.HF_REPO || 'RocklinKS/sathya-reviews' }}
+          HF_REPO: ${{ vars.HF_REPO || 'RocklinKS/sathya-reviews' }}
+          # Optional: Use the official variable name that huggingface_hub prefers
+          HUGGINGFACE_HUB_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python scripts/scraper.py
         continue-on-error: true
 
