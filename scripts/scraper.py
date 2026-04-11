@@ -17,7 +17,7 @@ from huggingface_hub import HfApi
 # ====================== CONFIG ======================
 HF_REPO_ID = os.environ.get("HF_REPO", "RocklinKS/sathya-reviews")
 HF_FILE = "sm.json"
-MAX_CONCURRENT = 6
+MAX_CONCURRENT = 7
 # ====================================================
 
 BRANCHES = [
@@ -78,45 +78,48 @@ def load_data():
 # HF: save sm.json  ← FIXED VERSION
 # ─────────────────────────────────────────────
 def save_data(data):
-    token = os.environ.get("HF_TOKEN", "")
+    token = os.environ.get("HF_TOKEN", "").strip()
     if not token:
-        print(" [Save] No HF_TOKEN — skipping upload.")
+        print(" [Save] ❌ No HF_TOKEN found in environment variables — skipping upload.")
         return
 
     try:
         api = HfApi(token=token)
 
-        # === IMPORTANT FIX: Create repository if it doesn't exist ===
-        try:
-            api.create_repo(
-                repo_id=HF_REPO_ID,
-                repo_type="dataset",
-                private=False,      # Set to True if you want private repo
-                exist_ok=True       # Don't fail if repo already exists
-            )
-            print(f" [Save] Repository '{HF_REPO_ID}' is ready")
-        except Exception as create_e:
-            print(f" [Save] Warning: Could not create repo (it may already exist): {create_e}")
+        # Step 1: Create repo if it doesn't exist
+        print(f" [Save] Checking/creating repo: {HF_REPO_ID} (dataset)")
+        repo_url = api.create_repo(
+            repo_id=HF_REPO_ID,
+            repo_type="dataset",
+            private=False,      # Change to True if you want it private
+            exist_ok=True
+        )
+        print(f" [Save] Repository ready → {repo_url}")
 
-        # Upload the file
+        # Step 2: Upload the file
         import tempfile
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
             tmp_path = f.name
 
+        print(f" [Save] Uploading sm.json ...")
         api.upload_file(
             path_or_fileobj=tmp_path,
-            path_in_repo=HF_FILE,
+            path_in_repo=HF_FILE,   # "sm.json"
             repo_id=HF_REPO_ID,
             repo_type="dataset",
-            commit_message=f"Update sm.json - {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}",
+            commit_message=f"Update sm.json - {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}",
         )
         os.unlink(tmp_path)
-        print(f" [Save] ✅ Successfully uploaded sm.json to hf://datasets/{HF_REPO_ID}/{HF_FILE}")
+        print(f" [Save] ✅ SUCCESS: sm.json uploaded to https://huggingface.co/datasets/{HF_REPO_ID}")
 
     except Exception as e:
-        print(f" [Save] ❌ HF upload failed: {e}")
+        print(f" [Save] ❌ FAILED to save to Hugging Face: {type(e).__name__}: {e}")
         traceback.print_exc()
+        print("\nPossible fixes:")
+        print("1. Make sure HF_TOKEN has 'Write' access (not just Read)")
+        print("2. Create the repo manually at https://huggingface.co/new-dataset")
+        print(f"3. Repo name must be exactly: {HF_REPO_ID}")
 
 
 # ─────────────────────────────────────────────
