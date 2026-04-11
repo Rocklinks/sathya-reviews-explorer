@@ -326,7 +326,7 @@ tbody td{padding:11px 14px;white-space:nowrap}
   </div>
 
   <div class="main" id="mc">
-    <div class="loading"><div class="spinner"></div>Loading data from Hugging Face…</div>
+    <div class="loading"><div class="spinner"></div>Loading data…</div>
   </div>
 </div>
 
@@ -337,7 +337,7 @@ tbody td{padding:11px 14px;white-space:nowrap}
  /* ═══════════════════════════════════════════════════════════
    CONFIG — Public Dataset (Easiest & Secure enough)
 ═══════════════════════════════════════════════════════════ */ 
-var HF_DATA_URL = "./sm.json";
+var DATA_URL = "./sm.json";
 /* ═══════════════════════════════════════════════════════════
    AGM COLORS
 ═══════════════════════════════════════════════════════════ */
@@ -389,7 +389,7 @@ function tickClock() {
 async function loadData() {
   try {
     // Add timestamp to bypass browser cache
-    const urlWithCache = HF_DATA_URL + "?t=" + Date.now();
+    const urlWithCache = DATA_URL + "?t=" + Date.now();
     
     console.log("Fetching from:", urlWithCache);   // Helpful for debugging
 
@@ -433,9 +433,8 @@ async function loadData() {
         <p style="margin-top:12px">Debug steps:</p>
         <ul style="text-align:left; font-size:13px; line-height:1.5;">
           <li>Open browser console (F12) and check the exact error</li>
-          <li>Confirm <code>sm.json</code> exists in the Files tab of your dataset</li>
-          <li>Try opening this link directly in a new tab:<br>
-              <code>https://huggingface.co/datasets/RocklinKS/sathya-reviews/raw/main/sm.json</code></li>
+          <li>Confirm <code>sm.json</code> exists in your <code>docs/</code> folder in the GitHub repo</li>
+          <li>Make sure GitHub Pages is enabled on the correct branch and folder</li>
         </ul>
       </div>`;
   }
