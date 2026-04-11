@@ -16,32 +16,32 @@ from huggingface_hub import HfApi
 
 # ====================== CONFIG ======================
 HF_REPO_ID = os.environ.get("HF_REPO", "RocklinKS/sathya-reviews")
-HF_FILE    = "sm.json"
+HF_FILE = "sm.json"
 MAX_CONCURRENT = 6
 # ====================================================
 
 BRANCHES = [
-    {"id": 1,  "name": "Tuticorin1",      "place_id": "ChIJuwNfBb7vAzsR1Gk8166QIVE", "agm": "Tamilselvan J"},
-    {"id": 2,  "name": "Tuticorin2",      "place_id": "ChIJUfzbg4L7AzsR4ikUKtp_sx4", "agm": "Tamilselvan J"},
-    {"id": 3,  "name": "Thisayanvilai1",  "place_id": "ChIJJfTo4pN_BDsR7pbTj8_dhEU", "agm": "Tamilselvan J"},
-    {"id": 4,  "name": "Eral1",           "place_id": "ChIJkyXwiO6NAzsR6Wmmcpg5axg", "agm": "Tamilselvan J"},
-    {"id": 5,  "name": "Sattur2",         "place_id": "ChIJFbxGS_XLBjsRPyxhjRSDW1A", "agm": "Tamilselvan J"},
-    {"id": 6,  "name": "Villathikullam1", "place_id": "ChIJueDIMftbATsR5FHkWT0DMtY", "agm": "Tamilselvan J"},
-    {"id": 7,  "name": "Tenkasi1",        "place_id": "ChIJX-SiDHopBDsR9WQZBK9_y-Q", "agm": "Ashok Kumar"},
-    {"id": 8,  "name": "Surandai1",       "place_id": "ChIJhXjnmVqdBjsRYdhg7Z2Use0", "agm": "Ashok Kumar"},
-    {"id": 9,  "name": "Ambasamudram1",   "place_id": "ChIJLReO2yI5BDsRJUI3MdjudKU", "agm": "Ashok Kumar"},
-    {"id": 10, "name": "Rajapalayam1",    "place_id": "ChIJM6i7syvoBjsROzyHWZO4iDw", "agm": "Ashok Kumar"},
-    {"id": 11, "name": "Virudunagar1",    "place_id": "ChIJpVZPddUtATsRNNu8qXIS6eQ", "agm": "Ashok Kumar"},
-    {"id": 12, "name": "Puliyangudi1",    "place_id": "ChIJPWqGUIKRBjsR3pR0lzk8zk4", "agm": "Ashok Kumar"},
-    {"id": 13, "name": "Sankarankovil1",  "place_id": "ChIJ9wmKdpGXBjsRhtEpPmbpYys", "agm": "Ashok Kumar"},
-    {"id": 14, "name": "Sivakasi1",       "place_id": "ChIJwdC-rYvPBjsRx0PfQwzW3hw", "agm": "Ashok Kumar"},
-    {"id": 15, "name": "Sivakasi2",       "place_id": "ChIJZ2o0g9nPBjsRgCcmzN1Colk", "agm": "Ashok Kumar"},
-    {"id": 16, "name": "Tirunelveli1",    "place_id": "ChIJhbSc2X_3AzsR9HvY0PLuBlo", "agm": "Senthil"},
-    {"id": 17, "name": "Tirunelveli2",    "place_id": "ChIJkdCXuEsRBDsR9A-LXevyGx0", "agm": "Senthil"},
-    {"id": 18, "name": "Valliyur1",       "place_id": "ChIJqa9AFoNnBDsR8pKyv1BnCK4", "agm": "Senthil"},
-    {"id": 19, "name": "Nagercoil1",      "place_id": "ChIJqZLlE__xBDsRADMABwteyfA", "agm": "Senthil"},
-    {"id": 20, "name": "Nagercoil2",      "place_id": "ChIJOwGck17xBDsRQOFyQQvObdg", "agm": "Senthil"},
-    {"id": 21, "name": "Marthandam",      "place_id": "ChIJqQL4BARVBDsRCIedlksC1fg", "agm": "Senthil"},
+    {"id": 1, "name": "Tuticorin1", "place_id": "ChIJuwNfBb7vAzsR1Gk8166QIVE", "agm": "Tamilselvan J"},
+    {"id": 2, "name": "Tuticorin2", "place_id": "ChIJUfzbg4L7AzsR4ikUKtp_sx4", "agm": "Tamilselvan J"},
+    {"id": 3, "name": "Thisayanvilai1", "place_id": "ChIJJfTo4pN_BDsR7pbTj8_dhEU", "agm": "Tamilselvan J"},
+    {"id": 4, "name": "Eral1", "place_id": "ChIJkyXwiO6NAzsR6Wmmcpg5axg", "agm": "Tamilselvan J"},
+    {"id": 5, "name": "Sattur2", "place_id": "ChIJFbxGS_XLBjsRPyxhjRSDW1A", "agm": "Tamilselvan J"},
+    {"id": 6, "name": "Villathikullam1", "place_id": "ChIJueDIMftbATsR5FHkWT0DMtY", "agm": "Tamilselvan J"},
+    {"id": 7, "name": "Tenkasi1", "place_id": "ChIJX-SiDHopBDsR9WQZBK9_y-Q", "agm": "Ashok Kumar"},
+    {"id": 8, "name": "Surandai1", "place_id": "ChIJhXjnmVqdBjsRYdhg7Z2Use0", "agm": "Ashok Kumar"},
+    {"id": 9, "name": "Ambasamudram1", "place_id": "ChIJLReO2yI5BDsRJUI3MdjudKU", "agm": "Ashok Kumar"},
+    {"id": 10, "name": "Rajapalayam1", "place_id": "ChIJM6i7syvoBjsROzyHWZO4iDw", "agm": "Ashok Kumar"},
+    {"id": 11, "name": "Virudunagar1", "place_id": "ChIJpVZPddUtATsRNNu8qXIS6eQ", "agm": "Ashok Kumar"},
+    {"id": 12, "name": "Puliyangudi1", "place_id": "ChIJPWqGUIKRBjsR3pR0lzk8zk4", "agm": "Ashok Kumar"},
+    {"id": 13, "name": "Sankarankovil1", "place_id": "ChIJ9wmKdpGXBjsRhtEpPmbpYys", "agm": "Ashok Kumar"},
+    {"id": 14, "name": "Sivakasi1", "place_id": "ChIJwdC-rYvPBjsRx0PfQwzW3hw", "agm": "Ashok Kumar"},
+    {"id": 15, "name": "Sivakasi2", "place_id": "ChIJZ2o0g9nPBjsRgCcmzN1Colk", "agm": "Ashok Kumar"},
+    {"id": 16, "name": "Tirunelveli1", "place_id": "ChIJhbSc2X_3AzsR9HvY0PLuBlo", "agm": "Senthil"},
+    {"id": 17, "name": "Tirunelveli2", "place_id": "ChIJkdCXuEsRBDsR9A-LXevyGx0", "agm": "Senthil"},
+    {"id": 18, "name": "Valliyur1", "place_id": "ChIJqa9AFoNnBDsR8pKyv1BnCK4", "agm": "Senthil"},
+    {"id": 19, "name": "Nagercoil1", "place_id": "ChIJqZLlE__xBDsRADMABwteyfA", "agm": "Senthil"},
+    {"id": 20, "name": "Nagercoil2", "place_id": "ChIJOwGck17xBDsRQOFyQQvObdg", "agm": "Senthil"},
+    {"id": 21, "name": "Marthandam", "place_id": "ChIJqQL4BARVBDsRCIedlksC1fg", "agm": "Senthil"},
 ]
 
 # ─────────────────────────────────────────────
@@ -52,6 +52,7 @@ def load_data():
     if not token:
         print(" [Data] No HF_TOKEN — starting fresh.")
         return {"branches": {}, "daily": {}, "logs": []}
+
     try:
         import urllib.request
         url = f"https://huggingface.co/datasets/{HF_REPO_ID}/resolve/main/{HF_FILE}?download=true"
@@ -72,46 +73,64 @@ def load_data():
             print(f" [Data] HF GET error: {e} — starting fresh.")
         return {"branches": {}, "daily": {}, "logs": []}
 
+
 # ─────────────────────────────────────────────
-# HF: save sm.json
+# HF: save sm.json  ← FIXED VERSION
 # ─────────────────────────────────────────────
 def save_data(data):
     token = os.environ.get("HF_TOKEN", "")
     if not token:
         print(" [Save] No HF_TOKEN — skipping upload.")
         return
+
     try:
-        import tempfile
         api = HfApi(token=token)
+
+        # === IMPORTANT FIX: Create repository if it doesn't exist ===
+        try:
+            api.create_repo(
+                repo_id=HF_REPO_ID,
+                repo_type="dataset",
+                private=False,      # Set to True if you want private repo
+                exist_ok=True       # Don't fail if repo already exists
+            )
+            print(f" [Save] Repository '{HF_REPO_ID}' is ready")
+        except Exception as create_e:
+            print(f" [Save] Warning: Could not create repo (it may already exist): {create_e}")
+
+        # Upload the file
+        import tempfile
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
             tmp_path = f.name
+
         api.upload_file(
             path_or_fileobj=tmp_path,
             path_in_repo=HF_FILE,
             repo_id=HF_REPO_ID,
             repo_type="dataset",
-            commit_message=f"data: update sm.json {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}",
+            commit_message=f"Update sm.json - {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}",
         )
         os.unlink(tmp_path)
-        print(f" [Save] ✅ Uploaded sm.json → hf://datasets/{HF_REPO_ID}/{HF_FILE}")
+        print(f" [Save] ✅ Successfully uploaded sm.json to hf://datasets/{HF_REPO_ID}/{HF_FILE}")
+
     except Exception as e:
         print(f" [Save] ❌ HF upload failed: {e}")
-        raise
+        traceback.print_exc()
+
 
 # ─────────────────────────────────────────────
-# SCRAPE CORE — same as agency _try_scrape
+# SCRAPE CORE
 # ─────────────────────────────────────────────
 async def _try_scrape(page, place_id, wait_ms=3000):
     url = f"https://www.google.com/maps/place/?q=place_id:{place_id}"
     count = None
     stars = None
-
     await page.goto(url, wait_until="domcontentloaded", timeout=35000)
     await page.wait_for_timeout(wait_ms)
     content = await page.content()
 
-    # Review count via aria-label
+    # Review count
     for sel in ['[aria-label*="reviews"]', '[aria-label*="Reviews"]', 'button[jsaction*="review"]']:
         els = await page.locator(sel).all()
         for el in els:
@@ -123,7 +142,7 @@ async def _try_scrape(page, place_id, wait_ms=3000):
         if count:
             break
 
-    # Star rating via aria-label
+    # Star rating
     for sel in ['[aria-label*="stars"]', 'span[aria-label*="stars"]', '[aria-label*="star rating"]']:
         els = await page.locator(sel).all()
         for el in els:
@@ -135,7 +154,7 @@ async def _try_scrape(page, place_id, wait_ms=3000):
         if stars:
             break
 
-    # Fallback for count
+    # Fallbacks...
     if not count:
         for pat in [r'([\d,]+)\s*reviews?', r'"reviewCount"["\s:]+(\d+)', r'(\d[\d,]{2,})\s*Google review']:
             m = re.search(pat, content, re.IGNORECASE)
@@ -145,9 +164,8 @@ async def _try_scrape(page, place_id, wait_ms=3000):
                     count = v
                     break
 
-    # Fallback for stars
     if not stars:
-        for pat in [r'"ratingValue":"([\d.]+)"', r'(\d\.\d)\s*(?:stars|out of 5)', r'"aggregateRating".*?"ratingValue":\s*"?([\d.]+)']:
+        for pat in [r'"ratingValue":"([\d.]+)"', r'(\d\.\d)\s*(?:stars|out of 5)']:
             m = re.search(pat, content, re.IGNORECASE)
             if m:
                 try:
@@ -160,11 +178,9 @@ async def _try_scrape(page, place_id, wait_ms=3000):
 
     return count, stars
 
-# ─────────────────────────────────────────────
-# SCRAPE WITH RETRIES — same as agency scrape_place
-# ─────────────────────────────────────────────
+
 async def scrape_place(context, place_id, name, max_retries=3):
-    wait_times  = [3000, 5000, 8000]
+    wait_times = [3000, 5000, 8000]
     pause_times = [0, 3, 5]
     for attempt in range(1, max_retries + 1):
         page = None
@@ -188,84 +204,60 @@ async def scrape_place(context, place_id, name, max_retries=3):
                     pass
     return None, None
 
-# ─────────────────────────────────────────────
-# COMPUTE MONTHLY
-# ─────────────────────────────────────────────
+
 def compute_monthly(data, bid, snap_date, daily_count):
     month_prefix = snap_date[:7]
-    # Find the most recent previous date in same month
     same_month_dates = sorted(
         [d for d in data.get("daily", {}) if d.startswith(month_prefix) and d < snap_date],
         reverse=True
     )
-    if same_month_dates:
-        prev_monthly = data["daily"][same_month_dates[0]].get(bid, {}).get("monthly", 0)
-    else:
-        prev_monthly = 0
+    prev_monthly = data["daily"][same_month_dates[0]].get(bid, {}).get("monthly", 0) if same_month_dates else 0
     return prev_monthly + daily_count
+
 
 # ─────────────────────────────────────────────
 # MAIN RUN
 # ─────────────────────────────────────────────
 async def run():
     IST_OFFSET = timedelta(hours=5, minutes=30)
-    now_ist    = datetime.utcnow() + IST_OFFSET
-    snap_date  = now_ist.strftime("%Y-%m-%d")
-    run_time   = datetime.utcnow().isoformat()
+    now_ist = datetime.utcnow() + IST_OFFSET
+    snap_date = now_ist.strftime("%Y-%m-%d")
+    run_time = datetime.utcnow().isoformat()
 
     print("=" * 58)
-    print("  SATHYA MOBILES — Review Scraper")
-    print(f"  Snap date  : {snap_date} (IST)")
-    print(f"  Run time   : {now_ist.strftime('%Y-%m-%d %H:%M IST')}")
-    print(f"  Branches   : {len(BRANCHES)}  |  Concurrency: {MAX_CONCURRENT}")
+    print(" SATHYA MOBILES — Review Scraper")
+    print(f" Snap date : {snap_date} (IST)")
+    print(f" Branches  : {len(BRANCHES)} | Concurrency: {MAX_CONCURRENT}")
     print("=" * 58)
 
-    # ── Load existing data from HF ──
     data = load_data()
 
-    # ── Build baseline (previous date totals for daily delta) ──
-    all_dates_before = sorted(
-        [d for d in data.get("daily", {}) if d < snap_date],
-        reverse=True
-    )
+    # Build baseline
+    all_dates_before = sorted([d for d in data.get("daily", {}) if d < snap_date], reverse=True)
     baseline_date = all_dates_before[0] if all_dates_before else None
     baseline_snap = data["daily"].get(baseline_date, {}) if baseline_date else {}
+    baseline = {str(b["id"]): baseline_snap.get(str(b["id"]), {}).get("total_snap", 
+                data.get("branches", {}).get(str(b["id"]), {}).get("overall", 0)) 
+                for b in BRANCHES}
 
-    baseline = {}
-    for b in BRANCHES:
-        bid = str(b["id"])
-        baseline[bid] = baseline_snap.get(bid, {}).get(
-            "total_snap",
-            data.get("branches", {}).get(bid, {}).get("overall", 0)
-        )
-
-    print(f"\n  Baseline date : {baseline_date or 'none (first run)'}\n")
+    print(f"\n Baseline date : {baseline_date or 'none (first run)'}\n")
 
     results = {}
     success = 0
-    failed  = []
+    failed = []
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(
             headless=True,
-            args=[
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-blink-features=AutomationControlled",
-                "--disable-gpu",
-            ]
+            args=["--no-sandbox", "--disable-dev-shm-usage", "--disable-blink-features=AutomationControlled"]
         )
         context = await browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/134.0.0.0 Safari/537.36"
-            ),
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
             locale="en-IN",
             viewport={"width": 1280, "height": 800},
         )
 
-        # ── Warm-up ──
+        # Warm-up
         try:
             page = await context.new_page()
             await page.goto("https://www.google.com/maps", wait_until="domcontentloaded", timeout=30000)
@@ -280,16 +272,18 @@ async def run():
         async def bounded_scrape(branch):
             nonlocal success
             async with semaphore:
-                bid  = str(branch["id"])
+                bid = str(branch["id"])
                 name = branch["name"]
                 print(f" [{branch['id']:02d}/{len(BRANCHES)}] {name:<22}", end=" ", flush=True)
+                
                 live, stars = await scrape_place(context, branch["place_id"], name)
+                
                 if live is not None:
-                    prev        = baseline.get(bid, 0)
-                    daily       = live - prev
-                    delta_str   = f"+{daily}" if daily >= 0 else str(daily)
-                    stars_str   = f"{stars}★" if stars else "—"
-                    print(f"→ {live:,} total  {delta_str} new  {stars_str}  ✓")
+                    prev = baseline.get(bid, 0)
+                    daily = live - prev
+                    delta_str = f"+{daily}" if daily >= 0 else str(daily)
+                    stars_str = f"{stars}★" if stars else "—"
+                    print(f"→ {live:,} total {delta_str} new {stars_str} ✓")
                     results[bid] = {"live": live, "stars": stars, "daily_count": daily}
                     success += 1
                 else:
@@ -300,73 +294,69 @@ async def run():
         await asyncio.gather(*[bounded_scrape(b) for b in BRANCHES])
         await browser.close()
 
-    # ── Process results into data structure ──
+    # Process results
     if snap_date not in data["daily"]:
         data["daily"][snap_date] = {}
 
     for b in BRANCHES:
         bid = str(b["id"])
         if bid not in results:
-            # Failed — carry forward previous snap so data isn't blank
             prev_snap = baseline_snap.get(bid, {})
             data["daily"][snap_date][bid] = {
-                "total_snap":  prev_snap.get("total_snap", 0),
+                "total_snap": prev_snap.get("total_snap", 0),
                 "daily_count": 0,
-                "monthly":     compute_monthly(data, bid, snap_date, 0),
+                "monthly": compute_monthly(data, bid, snap_date, 0),
                 "star_rating": prev_snap.get("star_rating", 0),
             }
             continue
 
-        r           = results[bid]
-        live        = r["live"]
-        stars       = r["stars"]
-        daily       = r["daily_count"]
-        old_stars   = data.get("branches", {}).get(bid, {}).get("star_rating", 0)
-        final_stars = stars if stars else old_stars
-        monthly     = compute_monthly(data, bid, snap_date, daily)
+        r = results[bid]
+        live = r["live"]
+        stars = r["stars"]
+        daily = r["daily_count"]
+        final_stars = stars if stars else data.get("branches", {}).get(bid, {}).get("star_rating", 0)
+        monthly = compute_monthly(data, bid, snap_date, daily)
 
         data["daily"][snap_date][bid] = {
-            "total_snap":  live,
+            "total_snap": live,
             "daily_count": daily,
-            "monthly":     monthly,
+            "monthly": monthly,
             "star_rating": final_stars,
         }
         data["branches"][bid] = {
-            "id":          b["id"],
-            "name":        b["name"],
-            "agm":         b["agm"],
-            "overall":     live,
+            "id": b["id"],
+            "name": b["name"],
+            "agm": b["agm"],
+            "overall": live,
             "star_rating": final_stars,
-            "monthly":     monthly,
+            "monthly": monthly,
         }
 
-    # ── Log entry ──
+    # Log
     data.setdefault("logs", []).insert(0, {
-        "ran_at":        run_time,
-        "snap_date":     snap_date,
+        "ran_at": run_time,
+        "snap_date": snap_date,
         "baseline_date": baseline_date,
-        "success":       success,
-        "failed":        len(failed),
-        "failed_names":  failed,
+        "success": success,
+        "failed": len(failed),
+        "failed_names": failed,
     })
-    data["logs"]         = data["logs"][:60]
+    data["logs"] = data["logs"][:60]
     data["last_updated"] = run_time
 
-    # ── Summary ──
+    # Summary
     total_reviews = sum(b.get("overall", 0) for b in data["branches"].values())
-    daily_total   = sum(
-        data["daily"].get(snap_date, {}).get(str(b["id"]), {}).get("daily_count", 0)
-        for b in BRANCHES
-    )
+    daily_total = sum(data["daily"].get(snap_date, {}).get(str(b["id"]), {}).get("daily_count", 0) for b in BRANCHES)
+
     print(f"\n{'─' * 58}")
-    print(f"  ✅ Scraped  : {success}/{len(BRANCHES)} branches")
+    print(f" ✅ Scraped : {success}/{len(BRANCHES)} branches")
     if failed:
-        print(f"  ❌ Failed   : {', '.join(failed)}")
-    print(f"  Total      : {total_reviews:,} reviews")
-    print(f"  Today      : +{daily_total} new reviews")
+        print(f" ❌ Failed  : {', '.join(failed)}")
+    print(f" Total     : {total_reviews:,} reviews")
+    print(f" Today     : +{daily_total} new reviews")
     print(f"{'─' * 58}\n")
 
-    # ── Upload to HF ──
+    # Upload to HF
     save_data(data)
 
     print(f"\n✅ Done: {success}/{len(BRANCHES)} branches saved for {snap_date}")
