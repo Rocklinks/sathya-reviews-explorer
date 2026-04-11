@@ -29,11 +29,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       # ── 3. Install npm deps (playwright) ─────────────────────────
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       # ── 4. Install Playwright Chromium + system deps ─────────────
       - name: Install Playwright Chromium
