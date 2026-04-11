@@ -1,5 +1,4 @@
-name: Run Sathya Review — Sathya Mobiles
-
+name: Sathya Mobiles Reviews Scraper
 on:
   schedule:
     - cron: '30 18 * * *'   # 12:00 AM IST = 18:30 UTC
@@ -9,14 +8,12 @@ on:
         description: 'Manual run reason'
         required: false
         default: 'Manual trigger'
-
 jobs:
   scrape:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     permissions:
       contents: write
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -37,7 +34,7 @@ jobs:
             libcairo2 libcups2 || true
 
       - name: Install Python packages
-        run: pip install playwright huggingface_hub
+        run: pip install playwright
 
       - name: Install Playwright Chromium
         run: python -m playwright install --with-deps chromium || true
@@ -45,48 +42,33 @@ jobs:
       # Attempt 1
       - name: Run scraper attempt 1
         id: attempt1
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_REPO: ${{ vars.HF_REPO || 'RocklinKS/sathya-reviews' }}
-          # Optional: Use the official variable name that huggingface_hub prefers
-          HUGGINGFACE_HUB_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python scripts/scraper.py
         continue-on-error: true
 
-      # Attempt 2 — immediate
+      # Attempt 2 — only if attempt 1 failed
       - name: Run scraper attempt 2
         id: attempt2
         if: steps.attempt1.outcome == 'failure'
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_REPO: ${{ vars.HF_REPO || 'RocklinKS/sathya-reviews' }}
-          # Optional: Use the official variable name that huggingface_hub prefers
-          HUGGINGFACE_HUB_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python scripts/scraper.py
         continue-on-error: true
 
-      # Attempt 3 — immediate
+      # Attempt 3 — only if attempt 1 & 2 failed
       - name: Run scraper attempt 3
         id: attempt3
         if: steps.attempt1.outcome == 'failure' && steps.attempt2.outcome == 'failure'
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_REPO: ${{ vars.HF_REPO || 'RocklinKS/sathya-reviews' }}
-          # Optional: Use the official variable name that huggingface_hub prefers
-          HUGGINGFACE_HUB_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python scripts/scraper.py
         continue-on-error: true
 
-      - name: Touch keepalive
+      # Commit docs/sm.json back to the repo
+      - name: Commit and push sm.json
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          echo "Last scrape: $(date -u '+%Y-%m-%d %H:%M UTC')" > .scrape-keepalive
-          git add .scrape-keepalive
+          git add docs/sm.json
           if git diff --staged --quiet; then
-            echo "Nothing to commit"
+            echo "sm.json unchanged — nothing to commit."
           else
-            git commit -m "chore: scrape run $(date -u '+%Y-%m-%d')"
+            git commit -m "data: sm.json update $(date -u '+%Y-%m-%d %H:%M UTC')"
             git push
           fi
