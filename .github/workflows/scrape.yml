@@ -18,27 +18,23 @@ jobs:
       contents: write
 
     steps:
-      # ── 1. Checkout ──────────────────────────────────────────────
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      # ── 2. Node.js setup ─────────────────────────────────────────
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # ── 3. Install npm deps (playwright) ─────────────────────────
       - name: Install dependencies
         run: npm install
 
-      # ── 4. Install Playwright Chromium + system deps ─────────────
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      # ── 5. Scrape — Attempt 1 ─────────────────────────────────────
+      # Attempt 1
       - name: Scrape — attempt 1
         id: attempt1
         env:
@@ -47,11 +43,7 @@ jobs:
         run: node scripts/scraper.js
         continue-on-error: true
 
-      # ── 6. Wait & retry 2 ─────────────────────────────────────────
-      - name: Wait 60s before retry
-        if: steps.attempt1.outcome == 'failure'
-        run: sleep 60
-
+      # Attempt 2 — immediate retry, no sleep
       - name: Scrape — attempt 2
         id: attempt2
         if: steps.attempt1.outcome == 'failure'
@@ -61,11 +53,7 @@ jobs:
         run: node scripts/scraper.js
         continue-on-error: true
 
-      # ── 7. Wait & retry 3 ─────────────────────────────────────────
-      - name: Wait 120s before final retry
-        if: steps.attempt1.outcome == 'failure' && steps.attempt2.outcome == 'failure'
-        run: sleep 120
-
+      # Attempt 3 — immediate retry, no sleep
       - name: Scrape — attempt 3
         id: attempt3
         if: steps.attempt1.outcome == 'failure' && steps.attempt2.outcome == 'failure'
@@ -74,7 +62,6 @@ jobs:
           HF_REPO:  ${{ secrets.HF_REPO || 'RocklinKS/sathya-reviews' }}
         run: node scripts/scraper.js
 
-      # ── 8. Keepalive touch ─────────────────────────────────────────
       - name: Touch keepalive
         if: always()
         run: |
