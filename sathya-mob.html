@@ -334,13 +334,19 @@ tbody td{padding:11px 14px;white-space:nowrap}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+JavaScript/* ═══════════════════════════════════════════════════════════
 /* ═══════════════════════════════════════════════════════════
-   CONFIG  — CHANGE THIS TO YOUR HUGGING FACE REPO
+   CONFIG — Most Reliable Version for Browser
 ═══════════════════════════════════════════════════════════ */
 var HF_REPO = "RocklinKS/sathya-reviews";
 var HF_FILE = "sm.json";
-var HF_DATA_URL = "https://huggingface.co/datasets/" + HF_REPO + "/resolve/main/" + HF_FILE + "?download=true";
 
+// Try multiple URLs in order (fallback system)
+var HF_DATA_URLS = [
+  `https://huggingface.co/datasets/${HF_REPO}/raw/main/${HF_FILE}`,
+  `https://huggingface.co/datasets/${HF_REPO}/resolve/main/${HF_FILE}`,
+  `https://raw.githubusercontent.com/RocklinKS/sathya-reviews/main/${HF_FILE}`  // fallback if you copy file to repo later
+];
 /* ═══════════════════════════════════════════════════════════
    AGM COLORS
 ═══════════════════════════════════════════════════════════ */
@@ -387,47 +393,74 @@ function tickClock() {
 
 /* ═══════════════════════════════════════════════════════════
    LOAD DATA FROM HUGGING FACE
+   Tries 3 URLs in order — handles private/public/CORS issues
 ═══════════════════════════════════════════════════════════ */
 async function loadData() {
-  try {
-    var r = await fetch(HF_DATA_URL + "&_t=" + Date.now());
-    if (!r.ok) throw new Error("HTTP " + r.status + " — HF fetch failed. Make sure sm.json exists in " + HF_REPO);
-    D = await r.json();
-    if (!D || !D.branches) throw new Error("Invalid data structure in sm.json");
+  let lastError = null;
 
-    if (!selectedDate) {
-      var logDate  = (D.logs && D.logs.length) ? D.logs[0].snap_date : null;
-      var dates    = Object.keys(D.daily || {}).sort().reverse();
-      var dataDate = dates.length ? dates[0] : null;
-      selectedDate = (logDate && dataDate)
-        ? (logDate > dataDate ? logDate : dataDate)
-        : (logDate || dataDate || isoYesterday());
+  for (let url of HF_DATA_URLS) {
+    try {
+      const urlWithCache = url + "?t=" + Date.now();
+      console.log("Trying URL:", urlWithCache);
+
+      var r = await fetch(urlWithCache, { 
+        method: 'GET',
+        cache: 'no-store'     // Force fresh fetch
+      });
+
+      if (!r.ok) {
+        throw new Error(`HTTP ${r.status} from ${url}`);
+      }
+
+      D = await r.json();
+
+      if (!D || !D.branches) {
+        throw new Error("Loaded JSON but missing 'branches' key");
+      }
+
+      console.log("✅ Successfully loaded data from:", url);
+
+      // Success → continue with normal flow
+      if (!selectedDate) {
+        var logDate = (D.logs && D.logs.length) ? D.logs[0].snap_date : null;
+        var dates = Object.keys(D.daily || {}).sort().reverse();
+        var dataDate = dates.length ? dates[0] : null;
+        selectedDate = (logDate && dataDate) 
+          ? (logDate > dataDate ? logDate : dataDate) 
+          : (logDate || dataDate || isoYesterday());
+      }
+
+      enrichAll(selectedDate);
+      var lu = D.last_updated 
+        ? new Date(D.last_updated).toLocaleString("en-IN") 
+        : "—";
+      document.getElementById("last-update").textContent = "Last sync: " + lu;
+
+      buildAgmSidebar();
+      renderView();
+      return;   // Exit on first success
+
+    } catch(e) {
+      lastError = e;
+      console.warn(`Failed with URL: ${url}`, e.message);
+      // Try next URL
     }
-
-    enrichAll(selectedDate);
-
-    var lu = D.last_updated
-      ? new Date(D.last_updated).toLocaleString("en-IN")
-      : "—";
-    document.getElementById("last-update").textContent = "Last sync: " + lu;
-
-    buildAgmSidebar();
-    renderView();
-
-  } catch(e) {
-    console.error("Load failed:", e);
-    document.getElementById("mc").innerHTML =
-      '<div class="data-error">' +
-      '<h3>⚠️ Could not load data</h3>' +
-      '<p>' + e.message + '</p>' +
-      '<p style="margin-top:12px">Make sure:</p>' +
-      '<p>1. The scraper has run at least once and pushed <code>sm.json</code> to Hugging Face</p>' +
-      '<p>2. The HF dataset <code>' + HF_REPO + '</code> is set to <b>Public</b></p>' +
-      '<p>3. <code>HF_REPO</code> at the top of this file matches your actual repo</p>' +
-      '</div>';
   }
-}
 
+  // All URLs failed
+  console.error("All attempts failed. Last error:", lastError);
+  document.getElementById("mc").innerHTML =
+    `<div class="data-error">
+      <h3>⚠️ Could not load sm.json</h3>
+      <p>${lastError ? lastError.message : 'Unknown error'}</p>
+      <p style="margin-top:15px">Please check:</p>
+      <ul style="text-align:left; font-size:13px;">
+        <li>Open this link in new tab → should show JSON:<br>
+            <a href="https://huggingface.co/datasets/RocklinKS/sathya-reviews/raw/main/sm.json" target="_blank">https://huggingface.co/datasets/RocklinKS/sathya-reviews/raw/main/sm.json</a></li>
+        <li>Check browser console (F12) for detailed error</li>
+      </ul>
+    </div>`;
+}
 /* ═══════════════════════════════════════════════════════════
    ENRICH ALL
 ═══════════════════════════════════════════════════════════ */

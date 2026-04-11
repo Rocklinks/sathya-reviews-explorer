@@ -48,7 +48,7 @@ BRANCHES = [
 # HF: load existing sm.json
 # ─────────────────────────────────────────────
 def load_data():
-    token = os.environ.get("HF_TOKEN", "")
+    token = os.environ.get("REVIEWS", "")
     if not token:
         print(" [Data] No HF_TOKEN — starting fresh.")
         return {"branches": {}, "daily": {}, "logs": []}
