@@ -430,7 +430,7 @@
   "logs": [
     {
       "ran_at": "2026-04-11T19:10:53.750359",
-      "snap_date": "2026-04-12",
+      "snap_date": "2026-04-11",
       "baseline_date": "2026-04-11",
       "success": 21,
       "failed": 0,
@@ -438,7 +438,7 @@
     },
     {
       "ran_at": "2026-04-11T14:15:53.684982",
-      "snap_date": "2026-04-11",
+      "snap_date": "2026-04-10",
       "baseline_date": null,
       "success": 21,
       "failed": 0,
