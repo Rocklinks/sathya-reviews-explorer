@@ -182,7 +182,7 @@ def compute_monthly(data, bid, snap_date, daily_count):
 async def run():
     IST_OFFSET = timedelta(hours=5, minutes=30)
     now_ist    = datetime.utcnow() + IST_OFFSET
-    snap_date  = now_ist.strftime("%Y-%m-%d")
+    snap_date = (now_ist.date() - timedelta(days=1)).strftime("%Y-%m-%d")
     run_time   = datetime.utcnow().isoformat()
 
     print("=" * 58)
